@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Original Craft / Custom Garage — реставрация и покраска авто</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a10;--v:#8b5cf6;--v2:#c4b5fd;--t:#ece9f5;--m:#b3aec6}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font:400 16px/1.6 Inter,sans-serif;overflow-x:hidden}
+h1,h2,h3,b{font-family:Oswald,sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:.02em;line-height:1.05}
+a{color:inherit;text-decoration:none}
+h2{font-size:clamp(34px,5vw,62px);margin-bottom:14px;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.eb{display:block;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--v2);margin-bottom:14px}
+.eb::after{content:"";display:inline-block;width:60px;height:1px;background:var(--v2);vertical-align:middle;margin-left:14px}
+.lead{color:var(--m);max-width:56ch;margin-bottom:44px}
+.glass{background:rgba(20,17,30,.58);border:1px solid rgba(196,181,253,.12);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px}
+/* единый фон: фото меняются плавно */
+.stack{position:fixed;inset:0;z-index:-2}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s ease}
+.bg.on{opacity:1}
+.stack::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(11,10,16,.74),rgba(11,10,16,.6) 50%,rgba(11,10,16,.8))}
+.stack::before{content:"";position:absolute;inset:0;z-index:2;opacity:.9;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+section{padding:130px 6vw}
+/* меню */
+nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:6px;padding:8px 10px 8px 12px;background:rgba(14,12,22,.74);border:1px solid rgba(196,181,253,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:60px;box-shadow:0 10px 40px rgba(0,0,0,.45);white-space:nowrap}
+.logo{border-radius:50%;object-fit:cover;border:1px solid rgba(196,181,253,.45)}
+.brand{display:flex;align-items:center;gap:12px;margin-right:12px;padding-right:20px;border-right:1px solid rgba(196,181,253,.18)}
+.brand .logo{height:44px;width:44px;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand b{display:block;font-size:15px;letter-spacing:.07em}
+.brand small{display:block;font-size:10px;letter-spacing:.16em;color:var(--m);text-transform:uppercase}
+.links{display:flex;gap:2px}
+.links a{padding:10px 15px;border-radius:40px;font-size:14px;color:var(--m);transition:.25s}
+.links a:hover{color:#fff}
+.links a.on{background:rgba(139,92,246,.24);color:#fff}
+.cta{margin-left:10px;padding:11px 20px;border-radius:40px;background:var(--v);color:#fff;font-weight:600;font-size:14px;box-shadow:0 0 22px rgba(139,92,246,.45)}
+.burger{display:none;width:42px;height:42px;border-radius:50%;border:1px solid rgba(196,181,253,.3);background:none;color:#fff;font-size:20px;cursor:pointer}
+/* стартовый экран */
+.hero{position:relative;isolation:isolate;min-height:100vh;display:flex;flex-direction:column;padding:125px 6vw 40px}
+.hbg{position:absolute;inset:0;z-index:-2;animation:zoom 30s ease-in-out infinite alternate;-webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent)}
+.hbg i{position:absolute;inset:0;background:#1a1426 center right/cover no-repeat}
+.hbg i:first-child{background-image:url(images/hero.jpg)}
+.hbg i:last-child{background-image:url(images/hero-on.jpg);opacity:0;animation:on 2s 1.2s ease forwards}
+@keyframes on{to{opacity:1}}
+@keyframes zoom{to{transform:scale(1.08)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,10,16,.7),transparent 26%),linear-gradient(90deg,rgba(11,10,16,.85),rgba(11,10,16,.35) 32%,transparent 50%)}
+.hero h1{font-size:clamp(40px,5.8vw,96px);margin-bottom:22px}
+.hero h1 span{display:block}
+.hero p{max-width:34ch;color:#d6d1e6;margin-bottom:30px;font-size:17px}
+.btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-block;padding:15px 30px;border-radius:50px;border:1px solid var(--v);cursor:pointer;font:600 16px Inter,sans-serif;color:#fff;transition:.25s}
+.btn.pr{background:var(--v);box-shadow:0 0 30px rgba(139,92,246,.45)}
+.btn.pr:hover{background:#9d78f8}
+.btn.gh{background:rgba(255,255,255,.05)}
+.btn.gh:hover{background:rgba(139,92,246,.22)}
+.adv{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:auto;padding-top:40px}
+.adv div{padding:18px 20px}
+.adv b{display:block;font-size:24px;color:var(--v2);margin-bottom:4px}
+.adv span{font-size:13px;color:var(--m);line-height:1.4;display:block}
+/* этапы */
+.track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 6vw 24px;margin:0 -6vw;scrollbar-width:thin;scrollbar-color:var(--v) transparent}
+.step{flex:0 0 min(320px,82vw);scroll-snap-align:start;padding:28px}
+.num{display:block;font:500 72px/1 Oswald,sans-serif;color:transparent;-webkit-text-stroke:1px rgba(196,181,253,.65)}
+.strip{height:6px;border-radius:3px;background:var(--c);margin:18px 0 22px}
+.step h3{font-size:25px;margin-bottom:10px}
+.step p{color:var(--m);font-size:15px}
+.chip{display:inline-block;margin-top:18px;padding:4px 14px;border-radius:30px;background:rgba(139,92,246,.2);color:var(--v2);font-size:13px}
+@media(min-width:1100px){.track{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;padding:0;margin:0}.step{flex:auto}}
+/* прайс */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.card{position:relative;overflow:hidden;padding:26px;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
+.card h3{font-size:22px}
+.pc{font:500 30px Oswald,sans-serif;color:var(--v2)}
+.card small{color:var(--m)}
+.tip{position:absolute;inset:0;padding:26px;background:linear-gradient(160deg,rgba(109,63,209,.96),rgba(32,14,78,.98));transform:translateY(101%);transition:transform .4s cubic-bezier(.2,.8,.2,1);font-size:15px}
+.tip b{display:block;font-size:20px;margin-bottom:10px}
+.card:hover .tip,.card.open .tip{transform:none}
+.note{margin-top:22px;color:var(--m)}
+/* портфолио */
+.cmps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.cmp{position:relative;aspect-ratio:4/3;border-radius:20px;overflow:hidden;--p:50%;border:1px solid rgba(196,181,253,.2);background:#16141d}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85) brightness(.82) contrast(1.05)}
+.cmp .a{clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+.cmp::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(139,92,246,.18),rgba(11,10,16,.4));box-shadow:inset 0 0 60px 10px rgba(11,10,16,.7)}
+.hd{position:absolute;top:0;bottom:0;left:var(--p);width:2px;margin-left:-1px;background:#fff;z-index:2;pointer-events:none}
+.hd::after{content:"⇄";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:var(--v);display:grid;place-items:center;font-size:18px;box-shadow:0 0 20px rgba(139,92,246,.7)}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;z-index:3}
+.tag{position:absolute;bottom:12px;z-index:2;padding:3px 12px;border-radius:30px;background:rgba(11,10,16,.7);font-size:12px;pointer-events:none}
+.tag.l{left:12px}.tag.r{right:12px}
+.cap{position:absolute;top:12px;left:14px;z-index:2;font:500 18px Oswald,sans-serif;text-transform:uppercase;pointer-events:none}
+/* отзывы */
+.rv3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.q{padding:30px;position:relative}
+.q::before{content:"“";position:absolute;top:6px;right:22px;font:500 90px/1 Oswald,sans-serif;color:rgba(139,92,246,.4)}
+.q p{color:#d6d1e6;margin-bottom:22px;min-height:96px}
+.q b{display:block;font-size:18px}
+.q small{color:var(--m)}
+/* о нас */
+.abt{display:grid;grid-template-columns:1fr 280px;gap:50px;align-items:center}
+.pr4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.pr4 div{padding:26px}
+.pr4 h3{font-size:22px;color:var(--v2);margin-bottom:8px}
+.pr4 p{color:var(--m);font-size:15px}
+.med{width:260px;height:260px;justify-self:center;box-shadow:0 0 90px rgba(139,92,246,.5)}
+/* запись */
+.book{display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
+.book>div{padding:30px}
+label{display:block;font-size:13px;color:var(--m);margin:14px 0 6px}
+input.f,select,textarea{width:100%;padding:13px 16px;border-radius:12px;border:1px solid rgba(196,181,253,.22);background:rgba(11,10,16,.65);color:var(--t);font:16px Inter,sans-serif}
+input.f:focus,select:focus,textarea:focus{outline:2px solid var(--v);outline-offset:1px}
+textarea{min-height:96px;resize:vertical}
+.fm{margin-top:22px}
+.ct p{margin-bottom:16px}
+.ct small{display:block;color:var(--m)}
+.tel{font:500 28px Oswald,sans-serif;color:var(--v2)}
+footer{text-align:center;color:var(--m);font-size:13px;padding:30px 6vw 50px}
+footer .logo{display:block;margin:0 auto 14px;width:72px;height:72px;opacity:.85}
+@media(max-width:1040px){
+ nav{width:calc(100% - 24px);justify-content:space-between;padding:8px 10px}
+ .brand{border:0;margin:0;padding:0}.brand div{display:none}
+ .cta{margin-left:auto}.burger{display:block}
+ .links{display:none;position:absolute;top:calc(100% + 10px);left:0;right:0;flex-direction:column;padding:10px;background:rgba(14,12,22,.94);border:1px solid rgba(196,181,253,.2);border-radius:24px}
+ nav.open .links{display:flex}.links a{padding:14px 18px;font-size:16px}
+ .adv{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){section{padding:90px 5vw}.hero{padding:115px 5vw 30px}.book,.abt{grid-template-columns:1fr}.med{order:-1;width:170px;height:170px}.hero p{font-size:16px}.hbg i{background-position:72% center}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}.hbg i:last-child{opacity:1}}
+</style>
+</head>
+<body>
+<div class="stack">
+  <div class="bg on" style="background-image:url(images/s-process.jpg)"></div>
+  <div class="bg" style="background-image:url(images/s-price.jpg)"></div>
+  <div class="bg" style="background-image:url(images/s-portfolio.jpg)"></div>
+  <div class="bg" style="background-image:url(images/s-reviews.jpg)"></div>
+  <div class="bg" style="background-image:url(images/s-about.jpg)"></div>
+  <div class="bg" style="background-image:url(images/s-book.jpg)"></div>
+</div>
+
+<nav id="nav">
+  <a class="brand" href="#top"><img class="logo" src="images/brand/logo-dark.jpg" alt="Original Craft"><div><b>Original Craft</b><small>Custom Garage</small></div></a>
+  <div class="links"><a href="#process">Процесс</a><a href="#price">Прайс</a><a href="#portfolio">Портфолио</a><a href="#reviews">Отзывы</a><a href="#about">О нас</a><a href="#book">Запись</a></div>
+  <a class="cta" id="photoBtn" href="#book">Оценить по фото</a>
+  <button class="burger" id="burger" aria-label="Menu">☰</button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hbg"><i></i><i></i></div>
+  <h1><span>Реставрация и</span><span>покраска авто</span></h1>
+  <p>Ручной кузовной ремонт и покраска в боксе. Честная подготовка металла и лак с глубиной цвета.</p>
+  <div class="btns"><a class="btn pr" href="#price">Узнать стоимость</a><a class="btn gh" href="#book">Позвонить</a></div>
+  <div class="adv">
+    <div class="glass"><b>5 лет</b><span>на рынке</span></div>
+    <div class="glass"><b>Дефектовка</b><span>и проверка каждой детали до начала работ</span></div>
+    <div class="glass"><b>Цена</b><span>фиксируем после осмотра</span></div>
+    <div class="glass"><b>Фотоотчёт</b><span>на каждом этапе работ</span></div>
+    <div class="glass"><b>Гарантия</b><span>на покраску и ремонт</span></div>
+  </div>
+</header>
+
+<section id="process" data-i="0">
+  <span class="eb">01 — Процесс</span>
+  <h2>Как мы красим</h2>
+  <p class="lead">Четыре этапа, четыре слоя. От честного ремонта металла до зеркального лака.</p>
+  <div class="track">
+    <article class="step glass"><i class="num">01</i><div class="strip" style="--c:linear-gradient(90deg,#b45a22,#5b5f66)"></div><h3>Дефектовка и ремонт</h3><p>Снимаем ЛКП до металла, делаем споттерную вытяжку и выставляем геометрию. Ничего не прячем под шпатлёвкой.</p><span class="chip">до металла</span></article>
+    <article class="step glass"><i class="num">02</i><div class="strip" style="--c:linear-gradient(90deg,#8a8d93,#5d6066)"></div><h3>Грунт и плоскость</h3><p>Грунтуем и доводим поверхность до идеальной плоскости. От неё зависит, как ляжет отражение.</p><span class="chip">плоскость</span></article>
+    <article class="step glass"><i class="num">03</i><div class="strip" style="--c:linear-gradient(90deg,#6d3fd1,#c4b5fd)"></div><h3>Нанесение цвета</h3><p>Наносим базу в камере с плавными переходами. Цвет подбираем по коду и сверяем на детали.</p><span class="chip">база в камере</span></article>
+    <article class="step glass"><i class="num">04</i><div class="strip" style="--c:linear-gradient(90deg,#3a1a85,#ffffff)"></div><h3>Лак и полировка</h3><p>Лак HS/UHS, запекание при 60°C и полировка в зеркало. Так появляется глубина и блик.</p><span class="chip">запекание 60°C</span></article>
+  </div>
+</section>
+
+<section id="price" data-i="1">
+  <span class="eb">02 — Прайс</span>
+  <h2>Прайс</h2>
+  <p class="lead">Наведите на карточку (на телефоне коснитесь), чтобы увидеть, что входит в услугу.</p>
+  <div class="grid">
+    <div class="card glass"><h3>Окрас одного элемента</h3><div><small>от</small><div class="pc">12 000 ₽</div></div><div class="tip"><b>Что входит</b>Подготовка детали, шпатлёвка при необходимости, грунт, подбор цвета по коду, база и лак.</div></div>
+    <div class="card glass"><h3>Полная покраска кузова</h3><div><small>от</small><div class="pc">180 000 ₽</div></div><div class="tip"><b>Что входит</b>Все элементы, грунт, цвет и лак по всему кузову.</div></div>
+    <div class="card glass"><h3>Абразивная полировка</h3><div><small>от</small><div class="pc">15 000 ₽</div></div><div class="tip"><b>Что входит</b>Убирает мелкие царапины, потускнение и паутинку без перекраски.</div></div>
+    <div class="card glass"><h3>Пайка пластика</h3><div><small>от</small><div class="pc">5 000 ₽</div></div><div class="tip"><b>Что входит</b>Ремонт трещин и разрывов бамперов без замены детали.</div></div>
+    <div class="card glass"><h3>Жестяные работы и геометрия</h3><div><div class="pc">после дефектовки</div></div><div class="tip"><b>Что входит</b>Снятие ЛКП до металла, споттерная вытяжка, восстановление геометрии.</div></div>
+  </div>
+  <p class="note">Точную стоимость называем после осмотра или по фото повреждений.</p>
+</section>
+
+<section id="portfolio" data-i="2">
+  <span class="eb">03 — Портфолио</span>
+  <h2>Наши работы</h2>
+  <p class="lead">Двигайте ползунок: слева машина после ремонта, справа до.</p>
+  <div class="cmps">
+    <div class="cmp"><img src="images/portfolio/bmw-before.jpg" alt="BMW до"><img class="a" src="images/portfolio/bmw-after.jpg" alt="BMW после"><span class="cap">BMW</span><i class="hd"></i><span class="tag l">после</span><span class="tag r">до</span><input type="range" min="0" max="100" value="50" aria-label="До и после, BMW"></div>
+    <div class="cmp"><img src="images/portfolio/audi-before.jpg" alt="Audi до"><img class="a" src="images/portfolio/audi-after.jpg" alt="Audi после"><span class="cap">Audi</span><i class="hd"></i><span class="tag l">после</span><span class="tag r">до</span><input type="range" min="0" max="100" value="50" aria-label="До и после, Audi"></div>
+    <div class="cmp"><img src="images/portfolio/geely-before.jpg" alt="Geely до"><img class="a" src="images/portfolio/geely-after.jpg" alt="Geely после"><span class="cap">Geely</span><i class="hd"></i><span class="tag l">после</span><span class="tag r">до</span><input type="range" min="0" max="100" value="50" aria-label="До и после, Geely"></div>
+  </div>
+</section>
+
+<section id="reviews" data-i="3">
+  <span class="eb">04 — Отзывы</span>
+  <h2>Отзывы</h2>
+  <p class="lead">Что говорят владельцы машин, которые к нам приезжали.</p>
+  <!-- ЗАМЕНИТЕ тексты, имена и марки на настоящие отзывы клиентов -->
+  <div class="rv3">
+    <div class="q glass"><p>Здесь будет отзыв клиента: пара предложений о том, что делали и что получилось.</p><b>Имя клиента</b><small>Марка авто</small></div>
+    <div class="q glass"><p>Здесь будет отзыв клиента: пара предложений о том, что делали и что получилось.</p><b>Имя клиента</b><small>Марка авто</small></div>
+    <div class="q glass"><p>Здесь будет отзыв клиента: пара предложений о том, что делали и что получилось.</p><b>Имя клиента</b><small>Марка авто</small></div>
+  </div>
+</section>
+
+<section id="about" data-i="4">
+  <span class="eb">05 — О нас</span>
+  <h2>О нас</h2>
+  <p class="lead">Это не конвейер. Каждая машина для нас штучный проект, и мы отвечаем за результат своим именем.</p>
+  <div class="abt">
+    <div class="pr4">
+      <div class="glass"><h3>Ручной труд</h3><p>Каждый элемент проходит через руки мастера, а не через автоматику.</p></div>
+      <div class="glass"><h3>Технология до микрона</h3><p>Контролируем толщину слоёв и режимы камеры на каждом этапе.</p></div>
+      <div class="glass"><h3>Без шпатлёвки-маски</h3><p>Не прячем дефекты под шпатлёвкой: сначала честный ремонт металла.</p></div>
+      <div class="glass"><h3>Премиальные материалы</h3><p>Работаем на проверенных материалах и лаках высокой твёрдости.</p></div>
+    </div>
+    <img class="logo med rot" src="images/brand/logo-dark.jpg" alt="Original Craft">
+  </div>
+</section>
+
+<section id="book" data-i="5">
+  <span class="eb">06 — Запись</span>
+  <h2>Запись</h2>
+  <p class="lead">Оставьте данные, и сообщение откроется в WhatsApp. Можно просто позвонить.</p>
+  <div class="book">
+    <div class="glass">
+      <label for="n">Имя</label><input class="f" id="n" autocomplete="name">
+      <label for="ph">Телефон</label><input class="f" id="ph" type="tel" autocomplete="tel">
+      <label for="sv">Услуга</label>
+      <select id="sv"><option>Окрас элемента</option><option>Полная покраска кузова</option><option>Абразивная полировка</option><option>Пайка пластика</option><option>Жестяные работы / геометрия</option><option>Пока не знаю, нужна консультация</option></select>
+      <label for="tx">Что случилось с машиной</label><textarea id="tx"></textarea>
+      <div class="btns fm"><button class="btn pr" type="button" id="wa">Отправить в WhatsApp</button><a class="btn gh" href="tel:+79210573301">Позвонить</a></div>
+    </div>
+    <div class="glass ct" style="padding:30px">
+      <p><small>Адрес бокса</small>Металлургов, 15</p>
+      <p><small>Телефон</small><a class="tel" href="tel:+79210573301">8 921 057-33-01</a></p>
+      <p><small>График</small>Ежедневно, 12:00–21:00</p>
+      <a class="btn gh" target="_blank" rel="noopener" href="https://yandex.ru/maps/?text=%D0%A7%D0%B5%D1%80%D0%B5%D0%BF%D0%BE%D0%B2%D0%B5%D1%86%2C%20%D0%9C%D0%B5%D1%82%D0%B0%D0%BB%D0%BB%D1%83%D1%80%D0%B3%D0%BE%D0%B2%2C%2015">Открыть на карте</a>
+    </div>
+  </div>
+</section>
+<footer><img class="logo rot" src="images/brand/logo-dark.jpg" alt="">© Original Craft / Custom Garage</footer>
+
+<script>
+const nav=document.getElementById('nav'),bgs=[...document.querySelectorAll('.bg')],links=[...document.querySelectorAll('.links a')];
+document.getElementById('burger').onclick=()=>nav.classList.toggle('open');
+links.forEach(a=>a.onclick=()=>nav.classList.remove('open'));
+// фон и меню следуют за текущим разделом
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=+e.target.dataset.i;bgs.forEach((b,k)=>b.classList.toggle('on',k===i));links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-50% 0px -50% 0px'});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+// логотипы вращаются при прокрутке
+const rots=document.querySelectorAll('.rot');
+addEventListener('scroll',()=>rots.forEach(r=>r.style.transform='rotate('+scrollY*.12+'deg)'),{passive:true});
+// прайс: тап на телефоне
+document.querySelectorAll('.card').forEach(c=>c.onclick=()=>{const o=c.classList.contains('open');document.querySelectorAll('.card').forEach(x=>x.classList.remove('open'));if(!o)c.classList.add('open')});
+// слайдеры до/после
+document.querySelectorAll('.cmp').forEach(c=>{const r=c.querySelector('input');r.oninput=()=>c.style.setProperty('--p',r.value+'%')});
+// запись
+function wa(t){window.open('https://wa.me/79210573301?text='+encodeURIComponent(t),'_blank')}
+document.getElementById('wa').onclick=()=>{const v=id=>document.getElementById(id).value.trim();wa('Здравствуйте! Меня зовут '+(v('n')||'—')+'.\nТелефон: '+(v('ph')||'—')+'\nУслуга: '+v('sv')+'\n'+(v('tx')||''))};
+document.getElementById('photoBtn').onclick=e=>{e.preventDefault();wa('Здравствуйте! Хочу оценить ремонт по фото. Отправляю фото повреждений.')};
+</script>
+</body>
+</html>
